@@ -13,7 +13,7 @@
 
 % After you set it, connect the camera and launch matlab. 
 % If the code is not working, and matlab crash,
-% that means that the camera doesen't work because you don;t have the rigths to access the camera.
+% that means that the camera doesen't work because you don't have the rigths to access the camera.
 % To overcome this problem you need to launch matlab via terminal and
 % update the security settings to allow the terminal to control the webcams
 
@@ -34,6 +34,8 @@ infoCamera.DeviceInfo(1).SupportedFormats;
 % define which camera you want to use and the supported format you want
 % i selected camera 1 and 3 because i had 4 cameras. Check the cameras
 % number by typing infoCamera.DeviceInfo.DeviceName
+% open the infoCamera matrix to see your cameras and the number of cameras
+% you have. Put the number rtelated to your cameras in the videoinput
 
 vid1 = videoinput('macvideo',1,'YCbCr422_1280x720');
 vid2 = videoinput('macvideo',3,'YCbCr422_1280x720');
@@ -44,7 +46,7 @@ preview(vid1);
 preview(vid2);
 
 % select how many times you want to capture the video. If inf, it means that
-% the video goeas foreveruntil you stop it with the command stop.
+% the video goeas forever until you stop it with the command stop.
 
 vid1.TriggerRepeat = Inf;
 vid2.TriggerRepeat = Inf;
@@ -69,16 +71,19 @@ vid2.LoggingMode = 'disk';
 vid1.DiskLogger = VideoWriter(['Type here your directory' '.AVI'],'Uncompressed AVI');
 vid2.DiskLogger = VideoWriter(['Type here your directory' '.AVI'],'Uncompressed AVI');
 
-% define the properties of the video capture
-vid1_src= getselectedsource(vid1);
-vid2_src= getselectedsource(vid2);
 
+% my cameras are set on a framerate of 60 frame per second (fps). You can adjust your
+% framerate using your webcam app on your computer. most of them have 30
+% fps, very rare cameras can be set at 60 fps. Mine works at 60 fps iwht a
+% resolution of 760p.
 
 % set how many frames to capture
 seconds_video = 5  
 
-vid1.FramesPerTrigger = seconds_video * 60;
-vid2.FramesPerTrigger = seconds_video * 60;
+frame_rate = 60;
+
+vid1.FramesPerTrigger = seconds_video * frame_rate;
+vid2.FramesPerTrigger = seconds_video * frame_rate;
 
 
 
@@ -106,7 +111,8 @@ pause
 [~, StartTrialSecs, ~, ~] = KbCheck(-1);
 flag = 0;
 
-
+% the cameras will not start to sample the video until you give the command
+% "trigger"
 trigger([vid1 vid2]);
 
 while flag == 0
@@ -116,6 +122,8 @@ while flag == 0
     flag = 1;
     end
 end
+
+% the following command stop the camera sampling
 
 stop([vid1 vid2]);
 
